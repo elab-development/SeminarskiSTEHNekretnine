@@ -1,0 +1,75 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Real Estate API",
+        "description": "API documentation for the Real Estate Laravel Application",
+        "contact": {
+            "email": "support@yourapp.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/api/inquiries": {
+            "post": {
+                "tags": [
+                    "Inquiries"
+                ],
+                "summary": "Submit a property inquiry",
+                "operationId": "3f728b15f306ab8aecbf3a468e2a4a56",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "property_id",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "property_id": {
+                                        "type": "integer"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inquiry submitted successfully"
+                    },
+                    "403": {
+                        "description": "Only regular users can create inquiries"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Inquiries",
+            "description": "Inquiries"
+        }
+    ]
+}
