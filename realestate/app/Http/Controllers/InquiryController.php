@@ -10,7 +10,14 @@ use Illuminate\Support\Facades\Auth;
 class InquiryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/inquiries",
+     *     summary="Get all inquiries (admin) or own inquiries (user)",
+     *     tags={"Inquiries"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="List of inquiries"),
+     *     @OA\Response(response=404, description="No inquiries found")
+     * )
      */
     public function index()
     {
@@ -33,16 +40,30 @@ class InquiryController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/inquiries",
+     *     summary="Submit a property inquiry",
+     *     tags={"Inquiries"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"property_id", "message"},
+     *             @OA\Property(property="property_id", type="integer"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(property="phone", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Inquiry submitted successfully"),
+     *     @OA\Response(response=403, description="Only regular users can create inquiries"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function store(Request $request)
     {
@@ -74,7 +95,22 @@ class InquiryController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/inquiries/{id}",
+     *     summary="Get a specific inquiry by ID",
+     *     tags={"Inquiries"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Inquiry ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Inquiry details"),
+     *     @OA\Response(response=403, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Inquiry not found")
+     * )
      */
     public function show($id)
     {
@@ -94,24 +130,33 @@ class InquiryController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Inquiry $inquiry)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Inquiry $inquiry)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/inquiries/{id}",
+     *     summary="Delete an inquiry by ID",
+     *     tags={"Inquiries"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Inquiry ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Inquiry deleted successfully"),
+     *     @OA\Response(response=403, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Inquiry not found")
+     * )
      */
     public function destroy($id)
     {
