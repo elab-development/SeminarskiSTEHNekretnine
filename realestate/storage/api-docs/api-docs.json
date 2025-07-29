@@ -393,6 +393,42 @@
                 ]
             }
         },
+        "/api/inquiries/{id}/users": {
+            "get": {
+                "tags": [
+                    "Inquiries"
+                ],
+                "summary": "Get all inquiries made by a specific user (admin only)",
+                "operationId": "eb3675f3fd6740d5564cb36faef8b51d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID whose inquiries are to be retrieved",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of inquiries"
+                    },
+                    "403": {
+                        "description": "Only admin can access this"
+                    },
+                    "404": {
+                        "description": "No inquiries found for the user"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/inquiries/{id}": {
             "get": {
                 "tags": [
@@ -856,6 +892,34 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/property-types/{id}/properties": {
+            "get": {
+                "tags": [
+                    "Property Types"
+                ],
+                "summary": "Get all properties by property type ID",
+                "operationId": "d7e5126b10e8a0072fe14c4a4a2a614b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the property type",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of properties for the given property type"
+                    },
+                    "404": {
+                        "description": "No properties found for this property type"
+                    }
+                }
             }
         },
         "/api/property-types/{id}": {

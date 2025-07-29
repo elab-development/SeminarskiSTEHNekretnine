@@ -24,6 +24,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::get('/property-types', [PropertyTypeController::class, 'index']);
 Route::get('/property-types/{id}', [PropertyTypeController::class, 'show']);
+Route::get('/property-types/{id}/properties', [PropertyTypeController::class, 'getPropertiesByType']);
 
 Route::get('/properties', [PropertyController::class, 'index']);
 Route::get('/properties/{id}', [PropertyController::class, 'show']);
@@ -42,5 +43,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('inquiries', InquiryController::class)
         ->except(['create', 'edit', 'update']);
 
+    Route::get('/inquiries/{id}/users', [InquiryController::class, 'getUserInquiries']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });

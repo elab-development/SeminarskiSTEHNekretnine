@@ -40,6 +40,43 @@ class InquiryController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/inquiries/{id}/users",
+     *     summary="Get all inquiries made by a specific user (admin only)",
+     *     tags={"Inquiries"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="User ID whose inquiries are to be retrieved",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="List of inquiries"),
+     *     @OA\Response(response=403, description="Only admin can access this"),
+     *     @OA\Response(response=404, description="No inquiries found for the user")
+     * )
+     */
+    public function getUserInquiries($id)
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Only admin can access this!'], 403);
+        }
+
+        $inquiries = Inquiry::with(['property', 'user'])->where('user_id', $id)->get();
+
+        if ($inquiries->isEmpty()) {
+            return response()->json(['message' => 'No inquiries found for this user.'], 404);
+        }
+
+        return response()->json([
+            'inquiries' => InquiryResource::collection($inquiries),
+        ]);
+    }
+
     public function create()
     {
         //

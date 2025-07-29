@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PropertyResource;
 use App\Http\Resources\PropertyTypeResource;
 use App\Models\PropertyType;
 use Illuminate\Http\Request;
@@ -28,6 +29,41 @@ class PropertyTypeController extends Controller
             'Property types' => PropertyTypeResource::collection($types),
         ]);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/property-types/{id}/properties",
+     *     summary="Get all properties by property type ID",
+     *     tags={"Property Types"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the property type",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of properties for the given property type",
+     *     ),
+     *     @OA\Response(response=404, description="No properties found for this property type")
+     * )
+     */
+    public function getPropertiesByType($id)
+    {
+        $properties = \App\Models\Property::with(['propertyType', 'listedBy'])
+            ->where('property_type_id', $id)
+            ->get();
+
+        if ($properties->isEmpty()) {
+            return response()->json(['message' => 'No properties found for this property type.'], 404);
+        }
+
+        return response()->json([
+            'properties' => PropertyResource::collection($properties),
+        ]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
