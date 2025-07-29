@@ -65,8 +65,75 @@ class PropertyController extends Controller
 
         $properties = $query->paginate($perPage, ['*'], 'page', $page);
 
-        return PropertyResource::collection($properties);
+        return response()->json([
+            'properties' => PropertyResource::collection($properties)
+        ]);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/properties/search",
+     *     summary="Search properties by query and optional sort by price",
+     *     tags={"Properties"},
+     *     @OA\Parameter(
+     *         name="query",
+     *         in="query",
+     *         required=true,
+     *         description="Search string matching title, description, city, address, status, type name, or lister name/email",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="sort_by_price",
+     *         in="query",
+     *         required=false,
+     *         description="Optional sorting by price. Use 'asc' or 'desc'.",
+     *         @OA\Schema(type="string", enum={"asc", "desc"})
+     *     ),
+     *     @OA\Response(response=200, description="List of properties"),
+     *     @OA\Response(response=400, description="Search query is required"),
+     *     @OA\Response(response=404, description="No matching properties found")
+     * )
+     */
+    public function search(Request $request)
+    {
+        $queryParam = $request->query('query');
+        $sortByPrice = $request->query('sort_by_price'); // 'asc' or 'desc'
+
+        if (!$queryParam) {
+            return response()->json(['error' => 'Search query is required.'], 400);
+        }
+
+        $properties = Property::with(['propertyType', 'listedBy'])
+            ->where(function ($q) use ($queryParam) {
+                $q->where('title', 'like', '%' . $queryParam . '%')
+                    ->orWhere('description', 'like', '%' . $queryParam . '%')
+                    ->orWhere('city', 'like', '%' . $queryParam . '%')
+                    ->orWhere('address', 'like', '%' . $queryParam . '%')
+                    ->orWhere('status', 'like', '%' . $queryParam . '%')
+                    ->orWhereHas('propertyType', function ($typeQuery) use ($queryParam) {
+                        $typeQuery->where('name', 'like', '%' . $queryParam . '%');
+                    })
+                    ->orWhereHas('listedBy', function ($userQuery) use ($queryParam) {
+                        $userQuery->where('name', 'like', '%' . $queryParam . '%')
+                            ->orWhere('email', 'like', '%' . $queryParam . '%');
+                    });
+            });
+
+        if ($sortByPrice === 'asc' || $sortByPrice === 'desc') {
+            $properties = $properties->orderBy('price', $sortByPrice);
+        }
+
+        $results = $properties->get();
+
+        if ($results->isEmpty()) {
+            return response()->json(['message' => 'No matching properties found.'], 404);
+        }
+
+        return response()->json([
+            'properties' => PropertyResource::collection($results)
+        ]);
+    }
+
 
     /**
      * Show the form for creating a new resource.

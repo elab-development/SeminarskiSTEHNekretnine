@@ -486,6 +486,50 @@
                 ]
             }
         },
+        "/api/properties/search": {
+            "get": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Search properties by query and optional sort by price",
+                "operationId": "04a80dc4ab88389047430a1611931979",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Search string matching title, description, city, address, status, type name, or lister name/email",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort_by_price",
+                        "in": "query",
+                        "description": "Optional sorting by price. Use 'asc' or 'desc'.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of properties"
+                    },
+                    "400": {
+                        "description": "Search query is required"
+                    },
+                    "404": {
+                        "description": "No matching properties found"
+                    }
+                }
+            }
+        },
         "/api/properties/{id}": {
             "get": {
                 "tags": [

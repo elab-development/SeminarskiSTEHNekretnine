@@ -27,6 +27,7 @@ Route::get('/property-types/{id}', [PropertyTypeController::class, 'show']);
 
 Route::get('/properties', [PropertyController::class, 'index']);
 Route::get('/properties/{id}', [PropertyController::class, 'show']);
+Route::get('/properties/search', [PropertyController::class, 'search']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
