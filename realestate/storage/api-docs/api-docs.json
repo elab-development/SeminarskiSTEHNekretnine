@@ -15,7 +15,201 @@
         }
     ],
     "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "operationId": "8a56853624e025573120a09a4c75d468",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log in a user",
+                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "secret123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "John Doe logged in"
+                                        },
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "WRONG INPUT"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log out the current user",
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "responses": {
+                    "200": {
+                        "description": "User logged out successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have successfully logged out."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/inquiries": {
+            "get": {
+                "tags": [
+                    "Inquiries"
+                ],
+                "summary": "Get all inquiries (admin) or own inquiries (user)",
+                "operationId": "0002d5f7ccef92ece21eb4fe4d42d4f7",
+                "responses": {
+                    "200": {
+                        "description": "List of inquiries"
+                    },
+                    "404": {
+                        "description": "No inquiries found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Inquiries"
@@ -64,12 +258,562 @@
                     }
                 ]
             }
+        },
+        "/api/inquiries/{id}": {
+            "get": {
+                "tags": [
+                    "Inquiries"
+                ],
+                "summary": "Get a specific inquiry by ID",
+                "operationId": "8f67c820771f0052915eb14aa7700dcc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Inquiry ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inquiry details"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Inquiry not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Inquiries"
+                ],
+                "summary": "Delete an inquiry by ID",
+                "operationId": "a23abef41dad950355787c27a4038030",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Inquiry ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Inquiry deleted successfully"
+                    },
+                    "403": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Inquiry not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/properties": {
+            "get": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Get a list of properties with optional filters and pagination",
+                "operationId": "ae50890d9da51a5cfe01cd2151d4077a",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Filter by title",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Filter by description",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "Filter by city",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "price_min",
+                        "in": "query",
+                        "description": "Minimum price",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "price_max",
+                        "in": "query",
+                        "description": "Maximum price",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "property_type",
+                        "in": "query",
+                        "description": "Property type name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Results per page",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of properties"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Create a new property",
+                "operationId": "debc241247e30f0490b9e236483217d0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "price",
+                                    "address",
+                                    "city",
+                                    "status",
+                                    "property_type_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "available",
+                                            "sold",
+                                            "pending"
+                                        ]
+                                    },
+                                    "property_type_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Property created successfully"
+                    },
+                    "403": {
+                        "description": "Only admin can create properties"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/properties/{id}": {
+            "get": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Get a specific property",
+                "operationId": "1ffeff79c18b3281ff5e01339a5831e7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property found"
+                    },
+                    "404": {
+                        "description": "Property not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Update an existing property",
+                "operationId": "d5f20f7ec2d5b865985ee2a307481311",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "price",
+                                    "address",
+                                    "city",
+                                    "status",
+                                    "property_type_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "available",
+                                            "sold",
+                                            "pending"
+                                        ]
+                                    },
+                                    "property_type_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Property updated successfully"
+                    },
+                    "403": {
+                        "description": "Only admin can update properties"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Properties"
+                ],
+                "summary": "Delete a property",
+                "operationId": "a1f3cd4975f784df9ae3f810e13a2066",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property deleted"
+                    },
+                    "403": {
+                        "description": "Only admin can delete properties"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/property-types": {
+            "get": {
+                "tags": [
+                    "Property Types"
+                ],
+                "summary": "Get all property types",
+                "operationId": "4732b47dc30b83e58224671df904f769",
+                "responses": {
+                    "200": {
+                        "description": "List of property types"
+                    },
+                    "404": {
+                        "description": "No property types found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Property Types"
+                ],
+                "summary": "Create a new property type",
+                "operationId": "d246513d1c4b4073141e45bd05edec8f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Property type created"
+                    },
+                    "403": {
+                        "description": "Only admin can create property types"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/property-types/{id}": {
+            "get": {
+                "tags": [
+                    "Property Types"
+                ],
+                "summary": "Get a specific property type",
+                "operationId": "171c3f177bf588137005565c8312f969",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property type found"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Property Types"
+                ],
+                "summary": "Update a property type",
+                "operationId": "4edd85b0d0fd8d16930403d5b8ad8a22",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Property type updated"
+                    },
+                    "403": {
+                        "description": "Only admin can update property types"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Property Types"
+                ],
+                "summary": "Delete a property type",
+                "operationId": "0d0f477e2ae67250924f8de19a0c54df",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Property type deleted"
+                    },
+                    "403": {
+                        "description": "Only admin can delete property types"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
         {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
             "name": "Inquiries",
             "description": "Inquiries"
+        },
+        {
+            "name": "Properties",
+            "description": "Properties"
+        },
+        {
+            "name": "Property Types",
+            "description": "Property Types"
         }
     ]
 }

@@ -16,6 +16,13 @@ namespace App\Http\Controllers;
  *     url="http://localhost:8000",
  *     description="Local Development Server"
  * )
+ *
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
  */
 class ApiDocController extends Controller
 {
