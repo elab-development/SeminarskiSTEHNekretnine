@@ -10,7 +10,21 @@ use Illuminate\Support\Facades\Auth;
 class PropertyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/properties",
+     *     summary="Get a list of properties with optional filters and pagination",
+     *     tags={"Properties"},
+     *     @OA\Parameter(name="title", in="query", description="Filter by title", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="description", in="query", description="Filter by description", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="city", in="query", description="Filter by city", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="status", in="query", description="Filter by status", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="price_min", in="query", description="Minimum price", @OA\Schema(type="number")),
+     *     @OA\Parameter(name="price_max", in="query", description="Maximum price", @OA\Schema(type="number")),
+     *     @OA\Parameter(name="property_type", in="query", description="Property type name", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="per_page", in="query", description="Results per page", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="List of properties")
+     * )
      */
     public function index(Request $request)
     {
@@ -63,7 +77,28 @@ class PropertyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/properties",
+     *     summary="Create a new property",
+     *     tags={"Properties"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title", "price", "address", "city", "status", "property_type_id"},
+     *             @OA\Property(property="title", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="price", type="number"),
+     *             @OA\Property(property="address", type="string"),
+     *             @OA\Property(property="city", type="string"),
+     *             @OA\Property(property="status", type="string", enum={"available", "sold", "pending"}),
+     *             @OA\Property(property="property_type_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Property created successfully"),
+     *     @OA\Response(response=403, description="Only admin can create properties"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function store(Request $request)
     {
@@ -94,7 +129,17 @@ class PropertyController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/properties/{id}",
+     *     summary="Get a specific property",
+     *     tags={"Properties"},
+     *     @OA\Parameter(
+     *         name="id", in="path", required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Property found"),
+     *     @OA\Response(response=404, description="Property not found")
+     * )
      */
     public function show($id)
     {
@@ -118,7 +163,28 @@ class PropertyController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/properties/{id}",
+     *     summary="Update an existing property",
+     *     tags={"Properties"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title", "price", "address", "city", "status", "property_type_id"},
+     *             @OA\Property(property="title", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="price", type="number"),
+     *             @OA\Property(property="address", type="string"),
+     *             @OA\Property(property="city", type="string"),
+     *             @OA\Property(property="status", type="string", enum={"available", "sold", "pending"}),
+     *             @OA\Property(property="property_type_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Property updated successfully"),
+     *     @OA\Response(response=403, description="Only admin can update properties")
+     * )
      */
     public function update(Request $request, Property $property)
     {
@@ -147,7 +213,15 @@ class PropertyController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/properties/{id}",
+     *     summary="Delete a property",
+     *     tags={"Properties"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Property deleted"),
+     *     @OA\Response(response=403, description="Only admin can delete properties")
+     * )
      */
     public function destroy(Property $property)
     {
