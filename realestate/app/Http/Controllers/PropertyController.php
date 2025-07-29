@@ -6,6 +6,7 @@ use App\Http\Resources\PropertyResource;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class PropertyController extends Controller
 {
@@ -23,6 +24,7 @@ class PropertyController extends Controller
      *     @OA\Parameter(name="property_type", in="query", description="Property type name", @OA\Schema(type="string")),
      *     @OA\Parameter(name="per_page", in="query", description="Results per page", @OA\Schema(type="integer")),
      *     @OA\Parameter(name="page", in="query", description="Page number", @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="currency", in="query", description="Target currency code (e.g. EUR, GBP)", @OA\Schema(type="string")),
      *     @OA\Response(response=200, description="List of properties")
      * )
      */
@@ -62,11 +64,29 @@ class PropertyController extends Controller
 
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
+        $currency = strtoupper($request->query('currency', 'USD'));
 
         $properties = $query->paginate($perPage, ['*'], 'page', $page);
 
+        if ($currency !== 'USD') {
+            try {
+                $response = Http::get("https://api.frankfurter.app/latest?from=USD&to=$currency");
+
+                if ($response->ok()) {
+                    $rate = $response->json()['rates'][$currency];
+
+                    foreach ($properties as $property) {
+                        $property->price = round($property->price * $rate, 2);
+                    }
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Currency conversion failed.'], 500);
+            }
+        }
+
         return response()->json([
-            'properties' => PropertyResource::collection($properties)
+            'properties' => PropertyResource::collection($properties),
+            'currency' => $currency
         ]);
     }
 

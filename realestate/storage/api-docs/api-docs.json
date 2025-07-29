@@ -578,6 +578,14 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "description": "Target currency code (e.g. EUR, GBP)",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
