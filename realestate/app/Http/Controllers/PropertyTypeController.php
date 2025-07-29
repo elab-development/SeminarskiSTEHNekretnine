@@ -10,7 +10,13 @@ use Illuminate\Support\Facades\Auth;
 class PropertyTypeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/property-types",
+     *     summary="Get all property types",
+     *     tags={"Property Types"},
+     *     @OA\Response(response=200, description="List of property types"),
+     *     @OA\Response(response=404, description="No property types found")
+     * )
      */
     public function index()
     {
@@ -32,7 +38,23 @@ class PropertyTypeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/property-types",
+     *     summary="Create a new property type",
+     *     tags={"Property Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Property type created"),
+     *     @OA\Response(response=403, description="Only admin can create property types"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function store(Request $request)
     {
@@ -52,7 +74,14 @@ class PropertyTypeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/property-types/{id}",
+     *     summary="Get a specific property type",
+     *     tags={"Property Types"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Property type found"),
+     *     @OA\Response(response=404, description="Not found")
+     * )
      */
     public function show($id)
     {
@@ -74,7 +103,23 @@ class PropertyTypeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/api/property-types/{id}",
+     *     summary="Update a property type",
+     *     tags={"Property Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Property type updated"),
+     *     @OA\Response(response=403, description="Only admin can update property types")
+     * )
      */
     public function update(Request $request, PropertyType $propertyType)
     {
@@ -94,7 +139,15 @@ class PropertyTypeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/property-types/{id}",
+     *     summary="Delete a property type",
+     *     tags={"Property Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Property type deleted"),
+     *     @OA\Response(response=403, description="Only admin can delete property types")
+     * )
      */
     public function destroy(PropertyType $propertyType)
     {
